@@ -19,7 +19,7 @@ List of components:
 1x BW4056 usbc charging module
 2x magnets
 
-Wires, melt-in thread insert M3, M3x10mm screws, 3D printer
+Wires, melt-in thread insert M3, M3x10mm screws, 3D printer, glue, tape
 
 the .stl files i provided are designed by myself (still in the beta) 
 for the display protection case use this .stl from Arduino: https://www.printables.com/model/605051-enclosure-for-arduino-giga-r1-wifi-and-giga-displa
@@ -27,5 +27,6 @@ for the display protection case use this .stl from Arduino: https://www.printabl
 
 
 Download the two .ino files and use them to flash the ESP32S3 and the GIGA R1 via Arduino IDE.
+
 
 
