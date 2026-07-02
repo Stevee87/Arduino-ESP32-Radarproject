@@ -19,3 +19,4 @@ Wires, melt-in thread insert M3, M3x10mm screws, 3D printer
 
 the .stl files i provided are designed by myself (still in the beta) 
 for the display protection case use this .stl from Arduino: https://www.printables.com/model/605051-enclosure-for-arduino-giga-r1-wifi-and-giga-displa
+<img width="684" height="710" alt="git info" src="https://github.com/user-attachments/assets/1299a6d1-cb5a-4348-9bda-8a0d8eccedad" />
