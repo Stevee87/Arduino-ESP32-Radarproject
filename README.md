@@ -1,3 +1,4 @@
+<img width="639" height="724" alt="git2" src="https://github.com/user-attachments/assets/350b4643-cfa8-4fc8-ba74-06a2b4dc2cc9" />
 The range of the radar is around 7m. It works best when the radar is stationary. It can detect people while it is in motion, but with significantly reduced accuracy. 
 The radar can detect movement through thin doors and walls. However, the range is severely limited in this case. This is simply due to the physics of radar waves in the 24 GHz range.
 The RD03-D can detect up to 3 People at the same time when they moving. It doesnt detect people standing still.
