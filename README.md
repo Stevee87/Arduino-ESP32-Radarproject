@@ -1,4 +1,4 @@
-<img width="639" height="724" alt="git2" src="https://github.com/user-attachments/assets/350b4643-cfa8-4fc8-ba74-06a2b4dc2cc9" />
+
 The range of the radar is around 7m. It works best when the radar is stationary. It can detect people while it is in motion, but with significantly reduced accuracy. 
 The radar can detect movement through thin doors and walls. However, the range is severely limited in this case. This is simply due to the physics of radar waves in the 24 GHz range.
 The RD03-D can detect up to 3 People at the same time when they moving. It doesnt detect people standing still.
@@ -20,4 +20,5 @@ Wires, melt-in thread insert M3, M3x10mm screws, 3D printer
 
 the .stl files i provided are designed by myself (still in the beta) 
 for the display protection case use this .stl from Arduino: https://www.printables.com/model/605051-enclosure-for-arduino-giga-r1-wifi-and-giga-displa
+<img width="639" height="724" alt="git2" src="https://github.com/user-attachments/assets/350b4643-cfa8-4fc8-ba74-06a2b4dc2cc9" />
 <img width="684" height="710" alt="git info" src="https://github.com/user-attachments/assets/1299a6d1-cb5a-4348-9bda-8a0d8eccedad" />
