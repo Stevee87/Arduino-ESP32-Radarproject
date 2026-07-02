@@ -25,3 +25,7 @@ the .stl files i provided are designed by myself (still in the beta)
 for the display protection case use this .stl from Arduino: https://www.printables.com/model/605051-enclosure-for-arduino-giga-r1-wifi-and-giga-displa
 <img width="639" height="724" alt="git2" src="https://github.com/user-attachments/assets/350b4643-cfa8-4fc8-ba74-06a2b4dc2cc9" />
 
+
+Download the two .ino files and use them to flash the ESP32S3 and the GIGA R1 via Arduino IDE.
+
+
