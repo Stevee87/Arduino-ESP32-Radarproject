@@ -15,6 +15,9 @@ anywhere as a standalone motion detector, independent of where the display sits.
 - Multi-target tracking (up to 3 people simultaneously, RD-03D built-in algorithm)
 - ~7m detection range
 - Live radar-style visualization on the GIGA Display Shield
+- Distance-reactive tracker sound (passive piezo buzzer, tempo and pitch scale with
+  the closest target's distance) — mute toggle built into the touchscreen
+- LED battery level indicators on both battery packs
 - Battery powered on both ends, USB-C rechargeable
 
 ## Known limitations
@@ -41,7 +44,9 @@ anywhere as a standalone motion detector, independent of where the display sits.
 | 1 | 3.7V LiPo, 1160100 (≥5000mAh) — GIGA side |
 | 1 | 3.7V LiPo, 602560 (~1300mAh) — radar side |
 | 1 | BW4056 USB-C charging module |
-| 2 | Magnets |
+| 1 | Passive piezo buzzer module (VCC/GND/Signal, tracker sound, GIGA side) |
+| 2 | Mini Battery Level Indicator, 1S Li-ion — [ElectroPeak BAT-03-086](https://electropeak.com/mini-battery-level-indicator-1s-li-ion), one per LiPo |
+| 4 | Magnets |
 | — | Wires, M3 heat-set inserts, M3x10mm screws, 3D printer, glue, tape |
 
 > Note: the wiring diagram below labels the step-up converters as **MT3601**, while the
@@ -49,7 +54,7 @@ anywhere as a standalone motion detector, independent of where the display sits.
 
 ## Wiring
 
-<img width="1264" height="1082" alt="circuit diagram final" src="https://github.com/user-attachments/assets/20d39d77-e845-42f0-bf09-e311e40ed9f7" />
+<img width="1305" height="1015" alt="circuit diagram v2" src="https://github.com/user-attachments/assets/03b5151c-7886-47be-baa8-c55ac11c72f7" />
 
 **Power (GIGA side):** LiPo (5000mAh) → TP4056 charging module → toggle switch →
 step-up converter set to 6V → GIGA `VIN`
@@ -79,6 +84,42 @@ Baud rate: 256000. Do **not** use D6/D7 (GPIO43/44) — reserved for USB-Serial 
 | UDP port | 4210 |
 | GIGA IP | 192.168.4.1 |
 
+### Tracker sound (buzzer)
+
+| Buzzer | GIGA R1 |
+|---|---|
+| VCC | 5V |
+| Signal (I/O) | D9 |
+| GND | GND |
+
+Must be a **passive** piezo buzzer, not active — an active buzzer has its own
+oscillator and only turns on/off, ignoring the frequency argument the code sends it.
+
+Behavior: silent when no target is detected. Once a target appears, it emits short
+(70ms) pings whose repeat rate and pitch both scale with the distance to the closest
+detected target — pings speed up and rise in pitch as someone gets closer (900ms /
+700Hz at ~8m down to 120ms / 1800Hz at ≤30cm). A mute toggle button is drawn directly
+on the touchscreen; tapping it silences the buzzer without affecting the radar
+visualization.
+
+### Battery level indicators
+
+Two [ElectroPeak Mini Battery Level Indicator (1S Li-ion)](https://electropeak.com/mini-battery-level-indicator-1s-li-ion)
+boards, one per LiPo pack. These are standalone analog modules (built-in comparator,
+±1% accuracy) — no microcontroller pin or firmware involved. Wire each board directly
+across its own battery's `+`/`-` terminals (in parallel with the existing TP4056 /
+step-up wiring, not in series):
+
+| Indicator LEDs lit | Charge level |
+|---|---|
+| 4 | 100% |
+| 3 | 75% |
+| 2 | 50% |
+| 1 | 25% |
+
+Board size is tiny (5 × 9.5mm) — tuck it wherever it fits in the enclosure near the
+battery leads.
+
 ## Firmware
 
 Open `firmware/rd03d_xiao_s3_sender/rd03d_xiao_s3_sender.ino` and flash it to the XIAO
@@ -100,14 +141,10 @@ Three 3D-printable parts are included:
 | `case/radar_top_case.stl` | 29 × 64 × 27 mm |
 | `case/radar_bottom_case.stl` | 29 × 67 × 30 mm |
 
-These are self-designed and still **beta** — expect rough edges. For a display
-protection case instead, this community-designed enclosure is recommended:
-[Enclosure for Arduino GIGA R1 WiFi and GIGA Display](https://www.printables.com/model/605051-enclosure-for-arduino-giga-r1-wifi-and-giga-displa).
 
 ## Build photos
 
-<img width="1954" height="1086" alt="building pictures" src="https://github.com/user-attachments/assets/7b6fa393-973d-4ab6-bb09-1d1765c21c6f" />
-
+<img width="1954" height="1086" alt="building pictures" src="https://github.com/user-attachments/assets/1453a2eb-515a-44c0-93b9-40d00f89eb04" />
 ## License
 
 MIT — see [LICENSE](LICENSE).
