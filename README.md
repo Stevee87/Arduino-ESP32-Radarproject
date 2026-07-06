@@ -53,8 +53,6 @@ anywhere as a standalone motion detector, independent of where the display sits.
 | 4 | Magnets |
 | — | Wires, M3 heat-set inserts, M3x10mm screws, 3D printer, glue, tape |
 
-> Note: the wiring diagram below labels the step-up converters as **MT3601**, while the
-> BOM says **MT3608** — double-check which one you actually used before reordering parts.
 
 ## Wiring
 
