@@ -4,8 +4,7 @@ A wireless 24GHz mmWave motion tracking system. A standalone radar node reports 
 targets over Wi-Fi to a separate display unit — so the radar and the screen don't have to
 be in the same place.
 
-<img width="662" height="600" alt="v22" src="https://github.com/user-attachments/assets/5aac037d-5a40-4d57-81f7-d398d023f9f8" />
-<img width="661" height="677" alt="v21" src="https://github.com/user-attachments/assets/622ae2f7-1498-4317-b406-c157c214ad4a" />
+<img width="662" height="600" alt="v22" src="https://github.com/user-attachments/assets/5aac037d-5a40-4d57-81f7-d398d023f9f8" /> <img width="661" height="677" alt="v21" src="https://github.com/user-attachments/assets/622ae2f7-1498-4317-b406-c157c214ad4a" />
 
 
 
