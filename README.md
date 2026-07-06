@@ -58,7 +58,7 @@ anywhere as a standalone motion detector, independent of where the display sits.
 
 ## Wiring
 
-<img width="1305" height="1015" alt="circuit diagram v2" src="https://github.com/user-attachments/assets/03b5151c-7886-47be-baa8-c55ac11c72f7" />
+<img width="1317" height="1039" alt="circuit diagram v2" src="https://github.com/user-attachments/assets/a0c188f8-cab8-4d00-9539-253054838e2e" />
 
 **Power (GIGA side):** LiPo (5000mAh) → TP4056 charging module → toggle switch →
 step-up converter set to 6V → GIGA `VIN`
