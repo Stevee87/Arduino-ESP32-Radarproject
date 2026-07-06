@@ -146,7 +146,7 @@ Three 3D-printable parts are included:
 | `case/radar_bottom_case.stl` | 29 × 67 × 30 mm |
 
 
-## Build photos
+## Build photos (old once, without the battery indicator and buzzer)
 
 <img width="1954" height="1086" alt="building pictures" src="https://github.com/user-attachments/assets/1453a2eb-515a-44c0-93b9-40d00f89eb04" />
 ## License
