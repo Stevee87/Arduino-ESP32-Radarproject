@@ -151,6 +151,12 @@ Three 3D-printable parts are included:
 ## Build photos (old once, without the battery indicator and buzzer)
 
 <img width="1954" height="1086" alt="building pictures" src="https://github.com/user-attachments/assets/1453a2eb-515a-44c0-93b9-40d00f89eb04" />
+
+
+No guarantee is provided for errors in the building instructions, the construction process, or anything similar. If you decide to build this project, you do so at your own risk.
+
+
+BUILD 
 ## License
 
 MIT — see [LICENSE](LICENSE).
