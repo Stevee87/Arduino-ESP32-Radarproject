@@ -47,7 +47,7 @@ anywhere as a standalone motion detector, independent of where the display sits.
 | 2 | MT3608 step-up converter |
 | 1 | 3.7V LiPo, 1160100 (≥5000mAh) — GIGA side |
 | 1 | 3.7V LiPo, 602560 (~1300mAh) — radar side |
-| 1 | BW4056 USB-C charging module |
+| 2 | BW4056 USB-C charging module |
 | 1 | Passive piezo buzzer module (VCC/GND/Signal, tracker sound, GIGA side) |
 | 2 | Mini Battery Level Indicator, 1S Li-ion — [ElectroPeak BAT-03-086](https://electropeak.com/mini-battery-level-indicator-1s-li-ion), one per LiPo |
 | 4 | Magnets |
@@ -56,7 +56,7 @@ anywhere as a standalone motion detector, independent of where the display sits.
 
 ## Wiring
 
-<img width="1317" height="1039" alt="circuit diagram v2" src="https://github.com/user-attachments/assets/a0c188f8-cab8-4d00-9539-253054838e2e" />
+<img width="1310" height="1052" alt="circuit diagram v2" src="https://github.com/user-attachments/assets/3dfa8055-9552-4972-af38-d97dccd8b02c" />
 
 **Power (GIGA side):** LiPo (5000mAh) → TP4056 charging module → toggle switch →
 step-up converter set to 6V → GIGA `VIN`
@@ -65,7 +65,7 @@ step-up converter set to 6V → GIGA `VIN`
 XIAO `BAT+`/`BAT-` (on the back of the board). The XIAO also charges its LiPo directly
 over USB-C.
 
-### XIAO ESP32-S3 ↔ RD-03D (sender)
+### XIAO ESP32-S3 ↔ RD-03D (transmitter)
 
 | RD-03D pin | XIAO pin | Notes |
 |---|---|---|
@@ -74,10 +74,12 @@ over USB-C.
 | VCC | 5V | from step-up converter |
 | GND | GND | |
 
+CAUTION: When charging the battery, set the POWER button to OFF. The same applies when the microcontroller is connected via USB-C. 
+
 Baud rate: 256000. Do **not** use D6/D7 (GPIO43/44) — reserved for USB-Serial (UART0).
 
 ### Wi-Fi link
-
+### Arduino Giga R1 ↔ (receiver)
 | | Value |
 |---|---|
 | Mode | GIGA R1 hosts an access point, XIAO connects as client |
@@ -93,6 +95,8 @@ Baud rate: 256000. Do **not** use D6/D7 (GPIO43/44) — reserved for USB-Serial 
 | VCC | 5V |
 | Signal (I/O) | D9 |
 | GND | GND |
+
+CAUTION: When charging the battery, set the POWER button to OFF. The same applies when the microcontroller is connected via USB-C. 
 
 Must be a **passive** piezo buzzer, not active — an active buzzer has its own
 oscillator and only turns on/off, ignoring the frequency argument the code sends it.
