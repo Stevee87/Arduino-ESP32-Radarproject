@@ -1,7 +1,30 @@
 # Arduino ESP32 mmWave Radar Project
+-------------------------------------------------------------------------------------------------------
+Safety & disclaimer
 
-No guarantee is provided for errors in the building instructions, the construction process, or anything similar. If you decide to build this project, you do so at your own risk.
-This is a hobby project shared as-is. Building this involves handling LiPo batteries and RF hardware — verify all wiring yourself before powering on. No warranty, use at your own risk!
+This is a hobby project, shared as-is for anyone who wants to build their own version.
+A few things to know before you do:
+
+
+LiPo batteries: incorrect wiring, reverse polarity, or physical damage to a
+LiPo cell can cause fire. Double-check polarity yourself before powering anything
+on, use a charging module rated for the cell you're using, and never leave a
+charging LiPo unattended.
+RF hardware: the RD-03D and any radio modules in this project operate
+according to their respective regulatory approvals (e.g. CE) for their intended
+region — verify this applies to your location before use.
+No warranty: this repository (firmware, wiring diagrams, enclosures, and this
+README) is provided without any warranty, express or implied. Verify every
+connection yourself before applying power — don't assume the diagrams here are
+free of mistakes.
+Use at your own risk: building and operating this project is entirely your
+own responsibility. The author assumes no liability for damage, injury, or loss
+resulting from building or using this project.
+
+If you spot an error in the docs, wiring, or code, please open an issue — corrections
+are welcome.
+-------------------------------------------------------------------------------------------------------
+
 
 A wireless 24GHz mmWave motion tracking system. A standalone radar node reports detected
 targets over Wi-Fi to a separate display unit — so the radar and the screen don't have to
@@ -156,8 +179,7 @@ Three 3D-printable parts are included:
 <img width="1954" height="1086" alt="building pictures" src="https://github.com/user-attachments/assets/91471574-c4d0-4898-a278-bfc3f9234ae1" />
 
 
-No guarantee is provided for errors in the building instructions, the construction process, or anything similar. If you decide to build this project, you do so at your own risk.
-This is a hobby project shared as-is. Building this involves handling LiPo batteries and RF hardware — verify all wiring yourself before powering on. No warranty, use at your own risk!
+
 
 
 
