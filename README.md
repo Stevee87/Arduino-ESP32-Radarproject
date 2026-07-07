@@ -1,5 +1,7 @@
 # Arduino ESP32 mmWave Radar Project
 
+No guarantee is provided for errors in the building instructions, the construction process, or anything similar. If you decide to build this project, you do so at your own risk.
+
 A wireless 24GHz mmWave motion tracking system. A standalone radar node reports detected
 targets over Wi-Fi to a separate display unit — so the radar and the screen don't have to
 be in the same place.
@@ -156,7 +158,7 @@ Three 3D-printable parts are included:
 No guarantee is provided for errors in the building instructions, the construction process, or anything similar. If you decide to build this project, you do so at your own risk.
 
 
-BUILD 
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
