@@ -37,7 +37,7 @@ be in the same place.
 ## How it works
 
 The radar module talks to an Arduino GIGA R1 via a Wi-Fi hotspot using a Seeed XIAO
-ESP32-S3 as the sender. Because the link is wireless, the radar node can be placed
+ESP32-S3 as the transmitter. Because the link is wireless, the radar node can be placed
 anywhere as a standalone motion detector, independent of where the display sits.
 
 ## Features
