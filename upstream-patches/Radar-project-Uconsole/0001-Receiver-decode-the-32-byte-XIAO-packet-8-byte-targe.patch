@@ -1,0 +1,40 @@
+From 7349c54732aeda8713187768b70107b49a6ea233 Mon Sep 17 00:00:00 2001
+From: patch <patch@localhost>
+Date: Sat, 3 Oct 2026 01:59:02 +0000
+Subject: [PATCH] Receiver: decode the 32-byte XIAO packet (8-byte targets),
+ not 29 bytes
+
+The XIAO firmware sends `struct __attribute__((packed)) UdpPacket` whose
+element type `struct Target { int16_t x, y, spd; uint8_t valid; }` is NOT
+packed, so each target is padded to 8 bytes and the datagram is 32 bytes.
+PACKET_FMT was "<II" + "hhhB" * 3 (29 bytes), which decodes target 1
+correctly but reads target 2 one byte early and target 3 two bytes early.
+Example with T2 = (500, 2500, 30, valid): the old format yields
+(9216, -24326, -11505, valid=255). Adding the pad byte ("hhhBx") fixes it.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TGbEMWcJoFY7rARJoCEYFt
+---
+ Firmware/uconsole_radar_receiver.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/Firmware/uconsole_radar_receiver.py b/Firmware/uconsole_radar_receiver.py
+index 3f4d38e..e97d647 100644
+--- a/Firmware/uconsole_radar_receiver.py
++++ b/Firmware/uconsole_radar_receiver.py
+@@ -29,7 +29,11 @@ import pygame
+ UDP_PORT = 4210
+ MAX_TARGETS = 3
+ MAGIC = 0xD03DA7A
+-PACKET_FMT = "<II" + "hhhB" * MAX_TARGETS
++# Pro Ziel 8 Byte: int16 x, int16 y, int16 spd, uint8 valid + 1 Füllbyte. Die
++# C-Struktur "Target" im XIAO-Sketch ist nicht gepackt, der Compiler rundet sie
++# auf 8 Byte auf; das Paket ist daher 4+4+3*8 = 32 Byte. Mit "hhhB" (7 Byte, 29
++# gesamt) wurden Ziel 2 und 3 um ein bzw. zwei Byte versetzt gelesen -> Müllwerte.
++PACKET_FMT = "<II" + "hhhBx" * MAX_TARGETS
+ PACKET_SIZE = struct.calcsize(PACKET_FMT)
+ 
+ # ── Display ──
+-- 
+2.43.0
+
