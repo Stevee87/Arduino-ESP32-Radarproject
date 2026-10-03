@@ -10,7 +10,7 @@
  */
 
 #include <WiFi.h>
-#include <WiFiUDP.h>
+#include <WiFiUdp.h>
 #include "Arduino_GigaDisplay_GFX.h"
 #include "Arduino_GigaDisplayTouch.h"
 
