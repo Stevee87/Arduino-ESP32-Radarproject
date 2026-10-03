@@ -5,7 +5,7 @@
  *
  * NETZWERK:
  *   Giga R1 ist Hotspot: SSID "RadarNet", PW "radar12345"
- *   Eigene IP: 192.168.4.1
+ *   Eigene IP: 192.168.3.1 (Standard des Arduino-Mbed-Cores; der XIAO nutzt die Gateway-IP)
  *   UDP Port: 4210
  */
 
@@ -102,7 +102,7 @@ const uint32_t STILL_TIMEOUT_MS = 2000;
 
 uint32_t frameCount = 0;
 uint32_t lastPacketMs = 0;
-bool     r4Connected = false;
+bool     txConnected = false;   // XIAO (Transmitter) hat schon gesendet
 
 // Buzzer-Status
 uint32_t lastBeepMs   = 0;
@@ -110,23 +110,34 @@ bool     beepActive   = false;
 uint32_t beepStartMs  = 0;
 
 // ── UDP empfangen ──
+// Alle wartenden Datagramme pro Durchlauf abholen und nur das neueste anzeigen.
+// Vorher wurde genau ein Paket pro loop() gelesen. Ein Durchlauf mit Neuzeichnen
+// dauert aber oft länger als der 100-ms-Takt des Radars; lwIP puffert nur 8
+// Pakete und verwirft neue, sodass die Anzeige dauerhaft hinterherlief.
 void receiveUdp() {
-  int sz = udp.parsePacket();
   static uint32_t lastDebug = 0;
+  static uint32_t rxCount   = 0;
+  UdpPacket pkt = {};
+  bool gotPacket = false;
+  int sz;
+  while ((sz = udp.parsePacket()) > 0) {
+    if (sz < (int)sizeof(UdpPacket)) continue;
+    UdpPacket tmp;
+    udp.read((uint8_t*)&tmp, sizeof(tmp));
+    if (tmp.magic != 0xD03DA7A) continue;
+    pkt = tmp;
+    gotPacket = true;
+    rxCount++;
+  }
   if (millis() - lastDebug > 2000) {
     lastDebug = millis();
-    Serial.print("UDP check sz="); Serial.println(sz);
+    Serial.print("UDP Pakete gesamt="); Serial.println(rxCount);
   }
-  if (sz < (int)sizeof(UdpPacket)) return;
-
-  UdpPacket pkt;
-  udp.read((uint8_t*)&pkt, sizeof(pkt));
-
-  if (pkt.magic != 0xD03DA7A) return;
+  if (!gotPacket) return;
 
   frameCount = pkt.frameCount;
   lastPacketMs = millis();
-  r4Connected = true;
+  txConnected = true;
 
   for (int i = 0; i < MAX_TARGETS; i++) {
     if (pkt.targets[i].valid) {
@@ -328,12 +339,12 @@ void updateDots() {
   int cnt = 0;
   for (int i=0; i<MAX_TARGETS; i++) if (targets[i].valid && !staleNow[i]) cnt++;
 
-  // R4 Verbindungsstatus
+  // Verbindungsstatus zum XIAO (Transmitter)
   bool alive = (millis() - lastPacketMs) < 3000;
   display.setTextColor(alive ? C_GREEN : C_RED); display.setTextSize(1);
   display.setCursor(675,36);
-  display.print(alive ? "R4: OK  " : "R4: ---  ");
-  char fb[12]; sprintf(fb,"fr:%lu", frameCount);
+  display.print(alive ? "TX: OK  " : "TX: ---  ");
+  char fb[16]; sprintf(fb,"fr:%lu", frameCount);   // "fr:" + 10 Stellen + NUL; fb[12] lief ab 1e8 Frames über
   display.print(fb);
 
   display.setTextColor(cnt>0?C_GREEN:C_GDIM);
@@ -356,7 +367,7 @@ void updateUptime() {
   if (millis()-lastUptimeMs < 1000) return;
   lastUptimeMs = millis();
   // Verbindungsverlust: alle Dots löschen
-  if ((millis() - lastPacketMs) > 3000 && r4Connected) {
+  if ((millis() - lastPacketMs) > 3000 && txConnected) {
     for (int i=0; i<MAX_TARGETS; i++) {
       targets[i].valid = false;
       if (dots[i].active) eraseDot(i);
@@ -479,7 +490,18 @@ void startAP() {
   Serial.print("Starte Hotspot '");
   Serial.print(AP_SSID);
   Serial.println("'...");
-  WiFi.beginAP(AP_SSID, AP_PASS, 6);
+  // Rückgabewert prüfen: fehlt die WLAN-Firmware im QSPI-Flash (oder wurde sie
+  // beim Core-Wechsel gelöscht), schlägt beginAP() still fehl, die Anzeige zeigt
+  // IP 0.0.0.0 und der XIAO findet nie ein Netz — das sah bisher wie ein Problem
+  // der Boot-Reihenfolge aus. Jetzt: Fehler anzeigen und alle 5 s neu versuchen.
+  int status;
+  while ((status = WiFi.beginAP(AP_SSID, AP_PASS, 6)) != WL_AP_LISTENING) {
+    Serial.print("Hotspot-Start fehlgeschlagen, Status "); Serial.println(status);
+    display.setTextColor(C_RED); display.setTextSize(1);
+    display.setCursor(120,265);
+    display.println("AP FAILED - WLAN-Firmware fehlt? (Beispiel WiFiFirmwareUpdater flashen)");
+    delay(5000);
+  }
   delay(5000);
   // Giga vergibt eigene IP — einfach nehmen was der Stack setzt
   Serial.print("AP IP: ");
@@ -521,7 +543,7 @@ void setup() {
 
   drawBackground();
   drawMuteButton();
-  Serial.println("Giga R1 bereit — warte auf R4...");
+  Serial.println("Giga R1 bereit — warte auf XIAO...");
 }
 
 void loop() {
