@@ -43,7 +43,7 @@ anywhere as a standalone motion detector, independent of where the display sits.
 ## Features
 
 - Multi-target tracking (up to 3 people simultaneously, RD-03D built-in algorithm)
-- ~7m detection range
+- 8 m rated detection range (expect 5–7 m indoors)
 - Live radar-style visualization on the GIGA Display Shield
 - Distance-reactive tracker sound (passive piezo buzzer, tempo and pitch scale with
   the closest target's distance) — mute toggle built into the touchscreen
@@ -84,12 +84,22 @@ anywhere as a standalone motion detector, independent of where the display sits.
 
 <img width="1283" height="1008" alt="circuit diagram v2" src="https://github.com/user-attachments/assets/89379cd5-6137-40ea-9238-3816095cbb12" />
 
-**Power (GIGA side):** LiPo (5000mAh) → TP4056 charging module → toggle switch →
-step-up converter set to 6V → GIGA `VIN`
+**Power (GIGA side):** LiPo (5000mAh) → BW4056 charging module → toggle switch →
+step-up converter set to 7–7.5V → GIGA `VIN`. Do not set it to 6V: that is the
+bottom of the GIGA's 6–24V input range and the board browns out as the cell
+discharges. Alternatively feed 5V into the GIGA's USB-C port from a 5V boost or
+power-bank module and skip `VIN` altogether.
 
-**Power (radar side):** LiPo (1300mAh) → toggle switch → step-up converter set to 5V →
-XIAO `BAT+`/`BAT-` (on the back of the board). The XIAO also charges its LiPo directly
-over USB-C.
+**Power (radar side):** LiPo (1300mAh) → BW4056 charging module → toggle switch →
+XIAO `BAT+`/`BAT-` (on the back of the board), **directly**. A second branch from
+the switched battery rail feeds the step-up converter set to 5V, which powers
+**only the RD-03D**.
+
+Never connect the 5V step-up output to `BAT+`: the BAT pads are the cell
+terminals of the XIAO's 1S charger (4.2V maximum), and a cell behind a boost
+converter cannot be charged by the XIAO. With the cell on the BAT pads the XIAO's
+USB-C also charges it (100mA, slow); never charge through the BW4056 and the XIAO
+at the same time.
 
 ### XIAO ESP32-S3 ↔ RD-03D (transmitter)
 
@@ -97,12 +107,16 @@ over USB-C.
 |---|---|---|
 | TX | D0 (GPIO1) | UART1 RX |
 | RX | D1 (GPIO2) | UART1 TX |
-| VCC | 5V | from step-up converter |
+| VCC | — | 5V from the step-up converter output, not from the XIAO's `5V` pin (that pin only carries power while USB is plugged in) |
 | GND | GND | |
 
 CAUTION: When charging the battery, set the POWER button to OFF. The same applies when the microcontroller is connected via USB-C. 
 
 Baud rate: 256000. Do **not** use D6/D7 (GPIO43/44) — reserved for USB-Serial (UART0).
+
+Antennas: neither the XIAO ESP32-S3 nor the GIGA R1 WiFi has an on-board antenna.
+Plug in the u.FL antenna that ships with each board, and route the XIAO's away from
+the LiPo and the magnets, or the Wi-Fi link will only work over a few metres.
 
 ### Wi-Fi link
 ### Arduino Giga R1 ↔ (receiver)
@@ -112,17 +126,15 @@ Baud rate: 256000. Do **not** use D6/D7 (GPIO43/44) — reserved for USB-Serial 
 | SSID | `RadarNet` |
 | Password | `radar12345` |
 | UDP port | 4210 |
-| GIGA IP | 192.168.4.1 |
+| GIGA IP | 192.168.3.1 (default of the Arduino Mbed core; the sketch never sets an address and the XIAO uses the DHCP gateway, so nothing depends on this value) |
 
 ### Tracker sound (buzzer)
 
 | Buzzer | GIGA R1 |
 |---|---|
-| VCC | 5V |
+| VCC | 3V3 (GIGA pins are not 5V tolerant and many 3-pin buzzer modules pull the signal line up to VCC) |
 | Signal (I/O) | D9 |
 | GND | GND |
-
-CAUTION: When charging the battery, set the POWER button to OFF. The same applies when the microcontroller is connected via USB-C. 
 
 Must be a **passive** piezo buzzer, not active — an active buzzer has its own
 oscillator and only turns on/off, ignoring the frequency argument the code sends it.
@@ -139,7 +151,7 @@ visualization.
 Two [ElectroPeak Mini Battery Level Indicator (1S Li-ion)](https://electropeak.com/mini-battery-level-indicator-1s-li-ion)
 boards, one per LiPo pack. These are standalone analog modules (built-in comparator,
 ±1% accuracy) — no microcontroller pin or firmware involved. Wire each board directly
-across its own battery's `+`/`-` terminals (in parallel with the existing TP4056 /
+across its own battery's `+`/`-` terminals (in parallel with the existing BW4056 /
 step-up wiring, not in series):
 
 | Indicator LEDs lit | Charge level |
@@ -154,27 +166,34 @@ battery leads.
 
 ## Firmware
 
-Open `firmware/rd03d_xiao_s3_sender/rd03d_xiao_s3_sender.ino` and flash it to the XIAO
-ESP32-S3, then open `firmware/rd03d_giga_receiver/rd03d_giga_receiver.ino` and flash it
-to the GIGA R1 — both via Arduino IDE.
+Open `Firmware/rd03d_xiao_s3_transmitter/rd03d_xiao_s3_transmitter.ino` and flash it to
+the XIAO ESP32-S3, then open `Firmware/rd03d_giga_receiver/rd03d_giga_receiver.ino` and
+flash it to the GIGA R1 — both via Arduino IDE.
+
+**Board packages:**
+- `esp32` by Espressif (3.x) — board "XIAO_ESP32S3", *USB CDC On Boot: Enabled*
+- `Arduino Mbed OS GIGA Boards` (4.x) — board "Arduino GIGA R1 WiFi". If the GIGA has never
+  run Wi-Fi, flash *File → Examples → STM32H747_System → WiFiFirmwareUpdater* once first.
 
 **Required libraries:**
-- `Arduino_GigaDisplay_GFX` (GIGA — display rendering)
+- `Arduino_GigaDisplay_GFX` (GIGA — display rendering; depends on `Adafruit GFX Library`)
 - `Arduino_GigaDisplayTouch` (GIGA — touch input)
 - `WiFi` / `WiFiUdp` (both boards, built into their respective cores)
 
 ## Enclosures
 
-Three 3D-printable parts are included:
+Four 3D-printable parts are included in `CAD files/` (binary STL; bounding boxes
+measured from the files):
 
-| File | Dimensions (W×D×H) |
-|---|---|
-| `case/display_case.stl` | 31 × 83 × 109 mm |
-| `case/radar_top_case.stl` | 29 × 64 × 27 mm |
-| `case/radar_bottom_case.stl` | 29 × 67 × 30 mm |
+| File | Bounding box (mm) | Part |
+|---|---|---|
+| `CAD files/body display.stl` | 34 × 105 × 113 | display body (GIGA + shield + 1160100 LiPo) |
+| `CAD files/top display.stl` | 8 × 85 × 111 | display lid |
+| `CAD files/top radarmodule.stl` | 47 × 31 × 87 | radar node body |
+| `CAD files/bottom radarmodule.stl` | 47 × 6 × 67 | radar node base plate |
 
 
-## Build photos (old once, without the battery indicator and buzzer)
+## Build photos (older ones, without the battery indicator and buzzer)
 
 <img width="1954" height="1086" alt="building pictures" src="https://github.com/user-attachments/assets/91471574-c4d0-4898-a278-bfc3f9234ae1" />
 
