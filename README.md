@@ -108,7 +108,7 @@ at the same time.
 |---|---|---|
 | TX | D0 (GPIO1) | UART1 RX |
 | RX | D1 (GPIO2) | UART1 TX |
-| BAT+ | — | 3,3 V from the TP4056 |
+| BAT+ | — | 3,7 V from the TP4056 |
 | GND | GND | |
 
 CAUTION: When charging the battery, set the POWER button to OFF. The same applies when the microcontroller is connected via USB-C. 
